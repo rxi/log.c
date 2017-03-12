@@ -2,7 +2,7 @@
  * Copyright (c) 2017 rxi
  *
  * This library is free software; you can redistribute it and/or modify it
- * under the terms of the MIT license. See `microtar.c` for details.
+ * under the terms of the MIT license. See `log.c` for details.
  */
 
 #ifndef LOG_H
