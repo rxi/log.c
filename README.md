@@ -38,10 +38,19 @@ will continue to write to the file if one is set.
 
 
 #### log_set_level(int level)
-The current logging level can be set by using the `log_set_level()` function.
+The current logging level for both stderr and the file pointer can be set by using the `log_set_level()` function.
 All logs below the given level will be ignored. By default the level is
 `LOG_TRACE`, such that nothing is ignored.
 
+#### log_set_level_fp(int level)
+The current logging level for just the file pointer can be set by using the `log_set_level_fp()` function.
+All logs below the given level will be ignored. By default the level is
+`LOG_TRACE`, such that nothing is ignored.
+
+#### log_set_level_stderr(int level)
+The current logging level for just stderr can be set by using the `log_set_level_stderr()` function.
+All logs below the given level will be ignored. By default the level is
+`LOG_TRACE`, such that nothing is ignored.
 
 #### log_set_fp(FILE *fp)
 A file pointer where the log should be written can be provided to the library by

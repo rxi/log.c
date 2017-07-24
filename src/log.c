@@ -32,7 +32,8 @@ static struct {
   void *udata;
   log_LockFn lock;
   FILE *fp;
-  int level;
+  int level_fp;
+  int level_stderr;
   int quiet;
 } L;
 
@@ -78,9 +79,17 @@ void log_set_fp(FILE *fp) {
 
 
 void log_set_level(int level) {
-  L.level = level;
+  log_set_level_fp(level);
+  log_set_level_stderr(level);
 }
 
+void log_set_level_fp(int level) {
+  L.level_fp = level;
+}
+
+void log_set_level_stderr(int level) {
+  L.level_stderr = level;
+}
 
 void log_set_quiet(int enable) {
   L.quiet = enable ? 1 : 0;
@@ -88,7 +97,7 @@ void log_set_quiet(int enable) {
 
 
 void log_log(int level, const char *file, int line, const char *fmt, ...) {
-  if (level < L.level) {
+  if (level < L.level_fp && level < L.level_stderr ) {
     return;
   }
 
@@ -99,8 +108,8 @@ void log_log(int level, const char *file, int line, const char *fmt, ...) {
   time_t t = time(NULL);
   struct tm *lt = localtime(&t);
 
-  /* Log to stderr */
-  if (!L.quiet) {
+  if (level >= L.level_stderr && !L.quiet) {
+    /* Log to stderr */
     va_list args;
     char buf[16];
     buf[strftime(buf, sizeof(buf), "%H:%M:%S", lt)] = '\0';
@@ -117,8 +126,9 @@ void log_log(int level, const char *file, int line, const char *fmt, ...) {
     fprintf(stderr, "\n");
   }
 
-  /* Log to file */
-  if (L.fp) {
+
+  if (level >= L.level_fp && L.fp) {
+    /* Log to file */
     va_list args;
     char buf[32];
     buf[strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M:%S", lt)] = '\0';
