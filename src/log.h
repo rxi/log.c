@@ -27,9 +27,12 @@ enum { LOG_TRACE, LOG_DEBUG, LOG_INFO, LOG_WARN, LOG_ERROR, LOG_FATAL };
 void log_set_udata(void *udata);
 void log_set_lock(log_LockFn fn);
 void log_set_fp(FILE *fp);
-void log_set_level(int level);
+void log_set_console_level(int level);
+void log_set_file_level(int level);
 void log_set_quiet(int enable);
 
 void log_log(int level, const char *file, int line, const char *fmt, ...);
+
+const char* getLevelName(int level);
 
 #endif

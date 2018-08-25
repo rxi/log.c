@@ -32,7 +32,8 @@ static struct {
   void *udata;
   log_LockFn lock;
   FILE *fp;
-  int level;
+  int console_level;
+  int file_level;
   int quiet;
 } L;
 
@@ -47,6 +48,9 @@ static const char *level_colors[] = {
 };
 #endif
 
+const char* getLevelName(int level) {
+    return level_names[level];
+}
 
 static void lock(void)   {
   if (L.lock) {
@@ -77,10 +81,13 @@ void log_set_fp(FILE *fp) {
 }
 
 
-void log_set_level(int level) {
-  L.level = level;
+void log_set_console_level(int level) {
+  L.console_level = level;
 }
 
+void log_set_file_level(int level) {
+  L.file_level = level;
+}
 
 void log_set_quiet(int enable) {
   L.quiet = enable ? 1 : 0;
@@ -88,7 +95,7 @@ void log_set_quiet(int enable) {
 
 
 void log_log(int level, const char *file, int line, const char *fmt, ...) {
-  if (level < L.level) {
+  if (level < L.console_level && level < L.file_level) {
     return;
   }
 
@@ -100,10 +107,10 @@ void log_log(int level, const char *file, int line, const char *fmt, ...) {
   struct tm *lt = localtime(&t);
 
   /* Log to stderr */
-  if (!L.quiet) {
+  if (!L.quiet && level >= L.console_level) {
     va_list args;
-    char buf[16];
-    buf[strftime(buf, sizeof(buf), "%H:%M:%S", lt)] = '\0';
+    char buf[24];
+    buf[strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M:%S", lt)] = '\0';
 #ifdef LOG_USE_COLOR
     fprintf(
       stderr, "%s %s%-5s\x1b[0m \x1b[90m%s:%d:\x1b[0m ",
@@ -119,7 +126,7 @@ void log_log(int level, const char *file, int line, const char *fmt, ...) {
   }
 
   /* Log to file */
-  if (L.fp) {
+  if (L.fp && level >= L.file_level) {
     va_list args;
     char buf[32];
     buf[strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M:%S", lt)] = '\0';
