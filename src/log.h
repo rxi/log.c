@@ -11,6 +11,10 @@
 #include <stdio.h>
 #include <stdarg.h>
 
+static const char *level_names[] = {
+  "TRACE", "DEBUG", "INFO", "WARN", "ERROR", "FATAL"
+};
+
 #define LOG_VERSION "0.1.0"
 
 typedef void (*log_LockFn)(void *udata, int lock);
