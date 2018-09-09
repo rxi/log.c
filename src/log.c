@@ -178,5 +178,4 @@ static void time_to_str(char *buf)
                       seconds,
                       msec);
     buf[len] = '\0';
-    printf("Time string length is : %d", len);
 }
