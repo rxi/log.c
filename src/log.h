@@ -11,6 +11,8 @@
 #include <stdio.h>
 #include <stdarg.h>
 
+#define MIN_LOG_LEVEL 0 // TRACE
+#define MAX_LOG_LEVEL 5 // FATAL
 static const char *level_names[] = {
   "TRACE", "DEBUG", "INFO", "WARN", "ERROR", "FATAL"
 };

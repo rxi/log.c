@@ -60,7 +60,10 @@ static const char *level_colors[] = {
 
 const char *getLevelName(int level)
 {
-    return level_names[level];
+    if (level >= MIN_LOG_LEVEL && level <= MAX_LOG_LEVEL)
+        return level_names[level];
+    else
+        return "INVALID LOG LEVEL";
 }
 
 static void lock(void)
