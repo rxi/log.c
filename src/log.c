@@ -46,7 +46,7 @@ static int day;
 static int hour;
 static int minutes;
 static int seconds;
-static int msec;
+static int usec;
 
 char time_string[25];
 
@@ -170,15 +170,16 @@ static void time_to_str(char *buf)
     hour    = tm->tm_hour;
     minutes = tm->tm_min;
     seconds = tm->tm_sec;
-    msec    = (int)(tv.tv_usec / 1000);
+    usec    = tv.tv_usec;
+    // msec
     // buf[strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M:%S", lt)] = '\0';
-    int len = sprintf(buf, "%04d-%02d-%02d %02d:%02d:%02d.%03d ",
+    int len = sprintf(buf, "%04d-%02d-%02d %02d:%02d:%02d.%06d ",
                       year,
                       month,
                       day,
                       hour,
                       minutes,
                       seconds,
-                      msec);
+                      usec);
     buf[len] = '\0';
 }
