@@ -11,6 +11,12 @@
 #include <stdio.h>
 #include <stdarg.h>
 
+#define MIN_LOG_LEVEL 0 // TRACE
+#define MAX_LOG_LEVEL 5 // FATAL
+static const char *level_names[] = {
+  "TRACE", "DEBUG", "INFO", "WARN", "ERROR", "FATAL"
+};
+
 #define LOG_VERSION "0.1.0"
 
 typedef void (*log_LockFn)(void *udata, int lock);
@@ -27,9 +33,12 @@ enum { LOG_TRACE, LOG_DEBUG, LOG_INFO, LOG_WARN, LOG_ERROR, LOG_FATAL };
 void log_set_udata(void *udata);
 void log_set_lock(log_LockFn fn);
 void log_set_fp(FILE *fp);
-void log_set_level(int level);
+void log_set_console_level(int level);
+void log_set_file_level(int level);
 void log_set_quiet(int enable);
 
 void log_log(int level, const char *file, int line, const char *fmt, ...);
+
+const char* getLevelName(int level);
 
 #endif
