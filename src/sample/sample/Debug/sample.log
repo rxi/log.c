@@ -1,0 +1,31 @@
+﻿Build started 25-May-19 4:01:16 PM.
+     1>Project "C:\Work\NED\comunity\log.c\src\sample\sample\sample.vcxproj" on node 2 (build target(s)).
+     1>PrepareForBuild:
+         Creating directory "C:\Work\NED\comunity\log.c\src\sample\Debug\".
+       InitializeBuildStatus:
+         Creating "Debug\sample.unsuccessfulbuild" because "AlwaysCreate" was specified.
+       ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt ..\..\log.cpp sample.cpp
+         sample.cpp
+     1>c:\work\ned\comunity\log.c\src\sample\sample\sample.cpp(8): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 10.0\vc\include\stdio.h(234) : see declaration of 'fopen'
+     1>c:\work\ned\comunity\log.c\src\sample\sample\sample.cpp(16): warning C4996: 'getch': The POSIX name for this item is deprecated. Instead, use the ISO C++ conformant name: _getch. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 10.0\vc\include\conio.h(128) : see declaration of 'getch'
+         log.cpp
+     1>c:\work\ned\comunity\log.c\src\log.cpp(100): warning C4996: 'localtime': This function or variable may be unsafe. Consider using localtime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 10.0\vc\include\time.inl(112) : see declaration of 'localtime'
+         Generating Code...
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Work\NED\comunity\log.c\src\sample\Debug\sample.exe" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /ManifestFile:"Debug\sample.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"C:\Work\NED\comunity\log.c\src\sample\Debug\sample.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Work\NED\comunity\log.c\src\sample\Debug\sample.lib" /MACHINE:X86 Debug\log.obj
+         Debug\sample.obj
+         sample.vcxproj -> C:\Work\NED\comunity\log.c\src\sample\Debug\sample.exe
+       Manifest:
+         C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\mt.exe /nologo /verbose /outputresource:"C:\Work\NED\comunity\log.c\src\sample\Debug\sample.exe;#1" /manifest Debug\sample.exe.intermediate.manifest
+       FinalizeBuildStatus:
+         Deleting file "Debug\sample.unsuccessfulbuild".
+         Touching "Debug\sample.lastbuildstate".
+     1>Done Building Project "C:\Work\NED\comunity\log.c\src\sample\sample\sample.vcxproj" (build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:02.06
