@@ -99,23 +99,23 @@ void log_log(int level, const char *file, int line, const char *fmt, ...) {
   time_t t = time(NULL);
   struct tm *lt = localtime(&t);
 
-  /* Log to stderr */
+  /* Log to stdout */
   if (!L.quiet) {
     va_list args;
     char buf[16];
     buf[strftime(buf, sizeof(buf), "%H:%M:%S", lt)] = '\0';
 #ifdef LOG_USE_COLOR
     fprintf(
-      stderr, "%s %s%-5s\x1b[0m \x1b[90m%s:%d:\x1b[0m ",
+      stdout, "%s %s%-5s\x1b[0m \x1b[90m%s:%d:\x1b[0m ",
       buf, level_colors[level], level_names[level], file, line);
 #else
-    fprintf(stderr, "%s %-5s %s:%d: ", buf, level_names[level], file, line);
+    fprintf(stdout, "%s %-5s %s:%d: ", buf, level_names[level], file, line);
 #endif
     va_start(args, fmt);
-    vfprintf(stderr, fmt, args);
+    vfprintf(stdout, fmt, args);
     va_end(args);
-    fprintf(stderr, "\n");
-    fflush(stderr);
+    fprintf(stdout, "\n");
+    fflush(stdout);
   }
 
   /* Log to file */
