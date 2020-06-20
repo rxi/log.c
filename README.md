@@ -31,33 +31,46 @@ Resulting in a line with the given format printed to stderr:
 ```
 
 
-#### log_set_quiet(int enable)
-Quiet-mode can be enabled by passing `1` to the `log_set_quiet()` function.
-While this mode is enabled the library will not output anything to stderr, but
-will continue to write to the file if one is set.
+#### log_set_quiet(bool enable)
+Quiet-mode can be enabled by passing `true` to the `log_set_quiet()` function.
+While this mode is enabled the library will not output anything to `stderr`, but
+will continue to write to files and callbacks if any are set.
 
 
 #### log_set_level(int level)
 The current logging level can be set by using the `log_set_level()` function.
-All logs below the given level will be ignored. By default the level is
-`LOG_TRACE`, such that nothing is ignored.
+All logs below the given level will not be written to `stderr`. By default the
+level is `LOG_TRACE`, such that nothing is ignored.
 
 
-#### log_set_fp(FILE *fp)
-A file pointer where the log should be written can be provided to the library by
-using the `log_set_fp()` function. The data written to the file output is
-of the following format:
+#### log_add_fp(FILE *fp, int level)
+One or more file pointers where the log will be written can be provided to the
+library by using the `log_add_fp()` function. The data written to the file
+output is of the following format:
 
 ```
 2047-03-11 20:18:26 TRACE src/main.c:11: Hello world
 ```
 
+Any messages below the given `level` are ignored. If the library failed to add a
+file pointer a value less-than-zero is returned.
 
-#### log_set_lock(log_LockFn fn)
+
+#### log_add_callback(log_LogFn fn, void *udata, int level)
+One or more callback functions which are called with the log data can be
+provided to the library by using the `log_add_callback()` function. A callback
+function is passed a `log_Event` structure containing the `line` number,
+`filename`, `fmt` string, `va` printf va\_list, `level` and the given `udata`.
+
+
+#### log_set_lock(log_LockFn fn, void *udata)
 If the log will be written to from multiple threads a lock function can be set.
-The function is passed a `udata` value (set by `log_set_udata()`) and the
-integer `1` if the lock should be acquired or `0` if the lock should be
-released.
+The function is passed the boolean `true` if the lock should be acquired or
+`false` if the lock should be released and the given `udata` value.
+
+
+#### const char* log_level_string(int level)
+Returns the name of the given log level as a string.
 
 
 #### LOG_USE_COLOR
