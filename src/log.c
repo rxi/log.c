@@ -154,7 +154,7 @@ void log_log(int level, const char *file, int line, const char *fmt, ...) {
     va_end(ev.ap);
   }
 
-  for (int i = 0; L.callbacks[i].fn; i++) {
+  for (int i = 0; i < MAX_CALLBACKS && L.callbacks[i].fn; i++) {
     Callback *cb = &L.callbacks[i];
     if (level >= cb->level) {
       init_event(&ev, cb->udata);
