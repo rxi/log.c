@@ -1,0 +1,6 @@
+2019-05-25 16:01:19 TRACE c:\work\ned\comunity\log.c\src\sample\sample\sample.cpp:10: hello world
+2019-05-25 16:01:19 DEBUG c:\work\ned\comunity\log.c\src\sample\sample\sample.cpp:11: this is a debug message
+2019-05-25 16:01:19 INFO  c:\work\ned\comunity\log.c\src\sample\sample\sample.cpp:12: passing information
+2019-05-25 16:01:19 WARN  c:\work\ned\comunity\log.c\src\sample\sample\sample.cpp:13: this is a warning message
+2019-05-25 16:01:19 ERROR c:\work\ned\comunity\log.c\src\sample\sample\sample.cpp:14: this is an error message
+2019-05-25 16:01:19 FATAL c:\work\ned\comunity\log.c\src\sample\sample\sample.cpp:15: this is a fatal message
