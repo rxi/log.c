@@ -8,12 +8,28 @@
 #ifndef LOG_H
 #define LOG_H
 
-#include <stdio.h>
-#include <stdarg.h>
-#include <stdbool.h>
-#include <time.h>
+#ifdef __cplusplus
+extern "C"
+{
+#endif
 
-#define LOG_VERSION "0.1.0"
+#include <stdarg.h>
+#include <stdio.h>
+#include <stdbool.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <time.h>
+#include <unistd.h>
+
+#define LOG_VERSION "0.2.0"
+
+typedef struct {
+  char* file_name;
+  off_t max_log_size;
+  unsigned int max_logs;
+} rolling_appender;
 
 typedef struct {
   va_list ap;
@@ -23,6 +39,7 @@ typedef struct {
   void *udata;
   int line;
   int level;
+  rolling_appender ra;
 } log_Event;
 
 typedef void (*log_LogFn)(log_Event *ev);
@@ -42,8 +59,13 @@ void log_set_lock(log_LockFn fn, void *udata);
 void log_set_level(int level);
 void log_set_quiet(bool enable);
 int log_add_callback(log_LogFn fn, void *udata, int level);
+int log_add_rolling_appender(rolling_appender ra, int level);
 int log_add_fp(FILE *fp, int level);
 
 void log_log(int level, const char *file, int line, const char *fmt, ...);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
