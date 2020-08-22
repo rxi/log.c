@@ -28,6 +28,7 @@ typedef struct {
   log_LogFn fn;
   void *udata;
   int level;
+  rolling_appender ra;
 } Callback;
 
 static struct {
@@ -49,6 +50,13 @@ static const char *level_colors[] = {
 };
 #endif
 
+
+int get_next_available_callback() {
+  for (int i = 0; i < MAX_CALLBACKS; i++)
+    if (!L.callbacks[i].fn)
+      return i;
+  return -1;
+}
 
 static void stdout_callback(log_Event *ev) {
   char buf[16];
@@ -78,6 +86,49 @@ static void file_callback(log_Event *ev) {
   vfprintf(ev->udata, ev->fmt, ev->ap);
   fprintf(ev->udata, "\n");
   fflush(ev->udata);
+}
+
+
+static void rolling_appender_callback(log_Event *ev) {
+  char* msg = (char*)calloc(strlen(ev->ra.file_name)+1024, sizeof(char));
+
+  if (ev->udata == NULL)
+    ev->udata = fopen(ev->ra.file_name, "a");
+  if (ev->udata == NULL) {
+    sprintf(msg, "Unable to open log file: %s", ev->ra.file_name);
+    perror(msg);
+    free(msg);
+    return;
+  }
+
+  file_callback(ev);
+
+  struct stat buf;
+  if (stat(ev->ra.file_name, &buf) < 0) {
+    sprintf(msg, "Unable to stat log file: %s", ev->ra.file_name);
+    perror(msg);
+    free(msg);
+    return;
+  }
+
+  free(msg);
+
+  if (buf.st_size >= ev->ra.max_log_size) {
+    char* old = (char*)calloc(strlen(ev->ra.file_name)+10, sizeof(char));
+    char* new = (char*)calloc(strlen(ev->ra.file_name)+10, sizeof(char));
+    fclose(ev->udata);
+    ev->udata = NULL;
+    for (unsigned int i = ev->ra.max_logs-1; i >= 1; i--) {
+      sprintf(old, "%s.%u", ev->ra.file_name, i);
+      sprintf(new, "%s.%u", ev->ra.file_name, i+1);
+      rename(old, new);
+    }
+    sprintf(new, "%s.1", ev->ra.file_name);
+    rename(ev->ra.file_name, new);
+
+    free(old);
+    free(new);
+  }
 }
 
 
@@ -113,13 +164,22 @@ void log_set_quiet(bool enable) {
 
 
 int log_add_callback(log_LogFn fn, void *udata, int level) {
-  for (int i = 0; i < MAX_CALLBACKS; i++) {
-    if (!L.callbacks[i].fn) {
-      L.callbacks[i] = (Callback) { fn, udata, level };
-      return 0;
-    }
-  }
-  return -1;
+  int nac = get_next_available_callback();
+  if (nac < 0)
+    return nac;
+
+  L.callbacks[nac] = (Callback) { fn, udata, level, {0} };
+  return 0;
+}
+
+
+int log_add_rolling_appender(rolling_appender ra, int level) {
+  int nac = get_next_available_callback();
+  if (nac < 0)
+    return nac;
+
+  L.callbacks[nac] = (Callback) { rolling_appender_callback, NULL, level, ra };
+  return 0;
 }
 
 
@@ -159,7 +219,9 @@ void log_log(int level, const char *file, int line, const char *fmt, ...) {
     if (level >= cb->level) {
       init_event(&ev, cb->udata);
       va_start(ev.ap, fmt);
+      ev.ra = cb->ra;
       cb->fn(&ev);
+      cb->udata = ev.udata;
       va_end(ev.ap);
     }
   }

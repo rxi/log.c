@@ -63,6 +63,20 @@ function is passed a `log_Event` structure containing the `line` number,
 `filename`, `fmt` string, `va` printf va\_list, `level` and the given `udata`.
 
 
+#### log_add_rolling_appender(rolling_appender ra, int level)
+One or more rolling log appenders. This is functionally equivalent to
+`log_add_fp()` from a logging standpoint. The function also handles log _file_
+management based on the values provided by the `rolling_appender` struct
+argument.
+
+After a log entry pushes the log size over the `ra.max_log_size` value, your
+active log is automatically rolled.
+
+Rolled logs appear in the same directory as the active log, and retain the same
+name as the active log, except a numeric value from `1` to `ra.max_logs`
+is appended to the end of the file name.
+
+
 #### log_set_lock(log_LockFn fn, void *udata)
 If the log will be written to from multiple threads a lock function can be set.
 The function is passed the boolean `true` if the lock should be acquired or
