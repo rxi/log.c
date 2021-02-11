@@ -15,10 +15,10 @@
 
 #define LOG_VERSION "0.1.0"
 
-#define RXI_LOGC_PRINTF_ATTRIB(n, m)
-
 #if defined __GNUC__
 #  define RXI_LOGC_PRINTF_ATTRIB(n, m) __attribute__((format(printf, n, m)))
+#else
+#  define RXI_LOGC_PRINTF_ATTRIB(n, m)
 #endif
 
 
