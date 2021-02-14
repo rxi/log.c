@@ -42,7 +42,7 @@ typedef void (*log_LogFn)(log_Event *ev);
 typedef void (*log_LockFn)(bool lock, void *udata);
 
 enum {
-    LOG_DEBUG = -10,
+    LOG_DEBUG = -32,
     LOG_TRACE = 0,
     LOG_INFO = 32,
     LOG_WARN = 64,
@@ -50,12 +50,12 @@ enum {
     LOG_FATAL = 128,
 };
 
-#define log_debug(...) do { if (LOG_DEBUG >= RXI_LOGC_DEFAULT_LEVEL) log_log(LOG_DEBUG, __FILE__, __LINE__, __VA_ARGS__) } while(0)
-#define log_trace(...) do { if (LOG_TRACE >= RXI_LOGC_DEFAULT_LEVEL) log_log(LOG_TRACE, __FILE__, __LINE__, __VA_ARGS__) } while(0)
-#define log_info(...)  do { if (LOG_INFO >= RXI_LOGC_DEFAULT_LEVEL) log_log(LOG_INFO,  __FILE__, __LINE__, __VA_ARGS__) } while(0)
-#define log_warn(...)  do { if (LOG_WARN >= RXI_LOGC_DEFAULT_LEVEL) log_log(LOG_WARN,  __FILE__, __LINE__, __VA_ARGS__) } while(0)
-#define log_error(...) do { if (LOG_ERROR >= RXI_LOGC_DEFAULT_LEVEL) log_log(LOG_ERROR, __FILE__, __LINE__, __VA_ARGS__) } while(0)
-#define log_fatal(...) do { if (LOG_FATAL >= RXI_LOGC_DEFAULT_LEVEL) log_log(LOG_FATAL, __FILE__, __LINE__, __VA_ARGS__) } while(0)
+#define log_debug(...) do { if (LOG_DEBUG >= RXI_LOGC_DEFAULT_LEVEL) log_log(LOG_DEBUG, __FILE__, __LINE__, __VA_ARGS__); } while(0)
+#define log_trace(...) do { if (LOG_TRACE >= RXI_LOGC_DEFAULT_LEVEL) log_log(LOG_TRACE, __FILE__, __LINE__, __VA_ARGS__); } while(0)
+#define log_info(...)  do { if (LOG_INFO >= RXI_LOGC_DEFAULT_LEVEL) log_log(LOG_INFO,  __FILE__, __LINE__, __VA_ARGS__); } while(0)
+#define log_warn(...)  do { if (LOG_WARN >= RXI_LOGC_DEFAULT_LEVEL) log_log(LOG_WARN,  __FILE__, __LINE__, __VA_ARGS__); } while(0)
+#define log_error(...) do { if (LOG_ERROR >= RXI_LOGC_DEFAULT_LEVEL) log_log(LOG_ERROR, __FILE__, __LINE__, __VA_ARGS__); } while(0)
+#define log_fatal(...) do { if (LOG_FATAL >= RXI_LOGC_DEFAULT_LEVEL) log_log(LOG_FATAL, __FILE__, __LINE__, __VA_ARGS__); } while(0)
 
 const char* log_level_string(int level);
 void log_set_lock(log_LockFn fn, void *udata);
