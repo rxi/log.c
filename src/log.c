@@ -40,7 +40,7 @@ static struct {
 
 
 static const char *level_strings[] = {
-  "DEBUG", "TRACE", "INFO", "WARN", "ERROR", "FATAL"
+  "[[DEBUG]]", "[[TRACE]]", "[[ INFO]]", "[[ WARN]]", "[[ERROR]]", "[[FATAL]]"
 };
 
 
@@ -69,12 +69,12 @@ static void stdout_callback(log_Event *ev) {
   buf[strftime(buf, sizeof(buf), "%H:%M:%S", ev->time)] = '\0';
 #ifdef LOG_USE_COLOR
   fprintf(
-    ev->udata, "%s %s%-5s\x1b[0m \x1b[90m%s:%d:\x1b[0m ",
+    ev->udata, "%s %s%-7s\x1b[0m \x1b[90m%s:%d:\x1b[0m ",
     buf, get_level_color(ev->level), get_level_string(ev->level),
     ev->file, ev->line);
 #else
   fprintf(
-    ev->udata, "%s %-5s %s:%d: ",
+    ev->udata, "%s %-7s %s:%d: ",
     buf, get_level_string(ev->level), ev->file, ev->line);
 #endif
   vfprintf(ev->udata, ev->fmt, ev->ap);
@@ -87,7 +87,7 @@ static void file_callback(log_Event *ev) {
   char buf[64];
   buf[strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M:%S", ev->time)] = '\0';
   fprintf(
-    ev->udata, "%s %-5s %s:%d: ",
+    ev->udata, "%s %-7s %s:%d: ",
     buf, get_level_string(ev->level), ev->file, ev->line);
   vfprintf(ev->udata, ev->fmt, ev->ap);
   fprintf(ev->udata, "\n");
