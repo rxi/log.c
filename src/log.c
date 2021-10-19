@@ -36,7 +36,13 @@ static struct {
   int level;
   bool quiet;
   Callback callbacks[MAX_CALLBACKS];
-} L;
+} L = {
+    NULL,
+    NULL,
+    RXI_LOGC_DEFAULT_LEVEL,
+    false,
+    {0},
+};
 
 
 static const char *level_strings[] = {
