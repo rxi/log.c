@@ -16,7 +16,7 @@
 #define LOG_VERSION "0.1.0"
 
 #ifndef RXI_LOGC_DEFAULT_LEVEL
-  # define RXI_LOGC_DEFAULT_LEVEL 0
+  # define RXI_LOGC_DEFAULT_LEVEL 1
 #endif
 
 
@@ -42,8 +42,8 @@ typedef void (*log_LogFn)(log_Event *ev);
 typedef void (*log_LockFn)(bool lock, void *udata);
 
 enum {
-    LOG_DEBUG = -64,
-    LOG_TRACE = -32,
+    LOG_DEBUG = -32,
+    LOG_TRACE = 0,
     LOG_INFO = 32,
     LOG_WARN = 64,
     LOG_ERROR = 96,
