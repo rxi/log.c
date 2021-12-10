@@ -34,6 +34,7 @@ static struct {
   void *udata;
   log_LockFn lock;
   int level;
+  int level_stderr;
   bool quiet;
   Callback callbacks[MAX_CALLBACKS];
 } L;
@@ -106,6 +107,9 @@ void log_set_level(int level) {
   L.level = level;
 }
 
+void log_set_level_stderr(int level) {
+  L.level_stderr = level;
+}
 
 void log_set_quiet(bool enable) {
   L.quiet = enable;
@@ -148,7 +152,7 @@ void log_log(int level, const char *file, int line, const char *fmt, ...) {
   lock();
 
   if (!L.quiet && level >= L.level) {
-    init_event(&ev, stderr);
+    init_event(&ev, level >= L.level_stderr ? stderr : stdout);
     va_start(ev.ap, fmt);
     stdout_callback(&ev);
     va_end(ev.ap);
