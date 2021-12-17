@@ -21,6 +21,7 @@
  */
 
 #include "log.h"
+#include <libgen.h>
 
 #define MAX_CALLBACKS 32
 
@@ -35,6 +36,7 @@ static struct {
   log_LockFn lock;
   int level;
   bool quiet;
+  bool fullpath;
   Callback callbacks[MAX_CALLBACKS];
 } L;
 
@@ -111,6 +113,9 @@ void log_set_quiet(bool enable) {
   L.quiet = enable;
 }
 
+void log_set_fullpath(bool enable) {
+  L.fullpath = enable;
+}
 
 int log_add_callback(log_LogFn fn, void *udata, int level) {
   for (int i = 0; i < MAX_CALLBACKS; i++) {
@@ -140,7 +145,7 @@ static void init_event(log_Event *ev, void *udata) {
 void log_log(int level, const char *file, int line, const char *fmt, ...) {
   log_Event ev = {
     .fmt   = fmt,
-    .file  = file,
+    .file  = L.fullpath ? file : basename((char*)file),
     .line  = line,
     .level = level,
   };
