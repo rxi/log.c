@@ -39,6 +39,7 @@ typedef struct {
     const char *fmt;
     const char *file;
     struct tm *time;
+    struct tm time_buf;
     void *udata;
     int line;
     int level;
@@ -46,8 +47,6 @@ typedef struct {
 
 typedef void (*log_LogFn)(log_Event *ev);
 typedef void (*log_LockFn)(bool lock, void *udata);
-
-
 
 #define log_debug(...)                                                         \
     do {                                                                       \
