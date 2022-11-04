@@ -10,9 +10,16 @@
 
 #include <stdio.h>
 #include <stdarg.h>
-#include <stdbool.h>
-#include <string.h>
 #include <time.h>
+
+#ifndef bool
+
+#define bool    int
+#define true    1
+#define false   0
+
+#endif
+
 
 #define LOG_VERSION "0.1.0"
 
