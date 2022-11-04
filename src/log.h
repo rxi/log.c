@@ -60,31 +60,31 @@ typedef void (*log_LockFn)(bool lock, void *udata);
 // Pre-C99 compatible definitions - BEGIN
 #define log_internal1(level, file, line, arg1)                                 \
     do {                                                                       \
-        if (LOG_TRACE >= RXI_LOGC_DEFAULT_LEVEL)                               \
+        if (level >= RXI_LOGC_DEFAULT_LEVEL)                               \
             log_log(level, file, line, arg1);                                  \
     } while (0)
 
 #define log_internal2(level, file, line, arg1, arg2)                           \
     do {                                                                       \
-        if (LOG_TRACE >= RXI_LOGC_DEFAULT_LEVEL)                               \
+        if (level >= RXI_LOGC_DEFAULT_LEVEL)                               \
             log_log(level, file, line, arg1, arg2);                            \
     } while (0)
 
 #define log_internal3(level, file, line, arg1, arg2, arg3)                     \
     do {                                                                       \
-        if (LOG_TRACE >= RXI_LOGC_DEFAULT_LEVEL)                               \
+        if (level >= RXI_LOGC_DEFAULT_LEVEL)                               \
             log_log(level, file, line, arg1, arg2, arg3);                      \
     } while (0)
 
 #define log_internal4(level, file, line, arg1, arg2, arg3, arg4)               \
     do {                                                                       \
-        if (LOG_TRACE >= RXI_LOGC_DEFAULT_LEVEL)                               \
+        if (level >= RXI_LOGC_DEFAULT_LEVEL)                               \
             log_log(level, file, line, arg1, arg2, arg3, arg4);                \
     } while (0)
 
 #define log_internal5(level, file, line, arg1, arg2, arg3, arg4, arg5)         \
     do {                                                                       \
-        if (LOG_TRACE >= RXI_LOGC_DEFAULT_LEVEL)                               \
+        if (level >= RXI_LOGC_DEFAULT_LEVEL)                               \
             log_log(level, file, line, arg1, arg2, arg3, arg4, arg5);           \
     } while (0)
 
