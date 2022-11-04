@@ -31,6 +31,9 @@ int main(int argc, char** argv) {
     log_error("ERROR - Hello %s", "world");
     log_fatal("FATAL - Hello %s", "world");
 
+    // Pre-C99 usage example
+    log_trace3("test 3 args: %s %s", "arg1", "arg2");
+
     fclose(f1);
     fclose(f2);
     fclose(f3);
