@@ -1,7 +1,7 @@
 #include "log.h"
 
 int main(int argc, char** argv) {
-    //log_set_quiet(true);
+    log_set_quiet(true);
     FILE *f1;
     FILE *f2;
     FILE *f3;
