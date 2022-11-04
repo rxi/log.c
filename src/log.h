@@ -16,7 +16,7 @@
 #define LOG_VERSION "0.1.0"
 
 #ifndef RXI_LOGC_DEFAULT_LEVEL
-#define RXI_LOGC_DEFAULT_LEVEL LOG_TRACE
+#define RXI_LOGC_DEFAULT_LEVEL LOG_DEBUG
 #endif
 
 #if defined __GNUC__
@@ -26,8 +26,8 @@
 #endif
 
 enum {
-    LOG_DEBUG = -32,
-    LOG_TRACE = 0,
+    LOG_TRACE = -32,
+    LOG_DEBUG = 0,
     LOG_INFO = 32,
     LOG_WARN = 64,
     LOG_ERROR = 96,
@@ -48,15 +48,15 @@ typedef struct {
 typedef void (*log_LogFn)(log_Event *ev);
 typedef void (*log_LockFn)(bool lock, void *udata);
 
-#define log_debug(...)                                                         \
-    do {                                                                       \
-        if (LOG_DEBUG >= RXI_LOGC_DEFAULT_LEVEL)                               \
-            log_log(LOG_DEBUG, __FILE__, __LINE__, __VA_ARGS__);               \
-    } while (0)
 #define log_trace(...)                                                         \
     do {                                                                       \
         if (LOG_TRACE >= RXI_LOGC_DEFAULT_LEVEL)                               \
             log_log(LOG_TRACE, __FILE__, __LINE__, __VA_ARGS__);               \
+    } while (0)
+#define log_debug(...)                                                         \
+    do {                                                                       \
+        if (LOG_DEBUG >= RXI_LOGC_DEFAULT_LEVEL)                               \
+            log_log(LOG_DEBUG, __FILE__, __LINE__, __VA_ARGS__);               \
     } while (0)
 #define log_info(...)                                                          \
     do {                                                                       \

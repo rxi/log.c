@@ -40,7 +40,7 @@ static struct {
     NULL, NULL, RXI_LOGC_DEFAULT_LEVEL, false, {{0}},
 };
 
-static const char *level_strings[] = {"[[DEBUG]]", "[[TRACE]]", "[[ INFO]]",
+static const char *level_strings[] = {"[[TRACE]]", "[[DEBUG]]", "[[ INFO]]",
                                       "[[ WARN]]", "[[ERROR]]", "[[FATAL]]"};
 
 static inline const char *get_level_string(int level) {
@@ -48,7 +48,7 @@ static inline const char *get_level_string(int level) {
 }
 
 #ifdef LOG_USE_COLOR
-static const char *level_colors[] = {"\x1b[36m", "\x1b[94m", "\x1b[32m",
+static const char *level_colors[] = {"\x1b[94m", "\x1b[36m", "\x1b[32m",
                                      "\x1b[33m", "\x1b[31m", "\x1b[35m"};
 
 static inline const char *get_level_color(int level) {
@@ -120,7 +120,7 @@ int log_add_fp(FILE *fp, int level) {
 static void init_event(log_Event *ev, void *udata) {
     if (!ev->time) {
         time_t t = time(NULL);
-        ev->time = localtime_r(&t, &ev->time_buf);
+        ev->time = localtime(&t, &ev->time_buf);
     }
     ev->udata = udata;
 }
