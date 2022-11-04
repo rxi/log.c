@@ -37,7 +37,7 @@ static struct {
     bool quiet;
     Callback callbacks[MAX_CALLBACKS];
 } L = {
-    NULL, NULL, RXI_LOGC_DEFAULT_LEVEL, false, {0},
+    NULL, NULL, RXI_LOGC_DEFAULT_LEVEL, false, {{0}},
 };
 
 static const char *level_strings[] = {"[[DEBUG]]", "[[TRACE]]", "[[ INFO]]",
