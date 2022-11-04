@@ -11,12 +11,13 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <stdbool.h>
+#include <string.h>
 #include <time.h>
 
 #define LOG_VERSION "0.1.0"
 
 #ifndef RXI_LOGC_DEFAULT_LEVEL
-#define RXI_LOGC_DEFAULT_LEVEL LOG_DEBUG
+#define RXI_LOGC_DEFAULT_LEVEL LOG_TRACE
 #endif
 
 #if defined __GNUC__
@@ -40,6 +41,7 @@ typedef struct {
     const char *file;
     struct tm *time;
     struct tm time_buf;
+    char      time_str[32];
     void *udata;
     int line;
     int level;

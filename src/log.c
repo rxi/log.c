@@ -20,6 +20,7 @@
  * IN THE SOFTWARE.
  */
 
+#include <sys/time.h>
 #include "log.h"
 
 #define MAX_CALLBACKS 32
@@ -40,6 +41,20 @@ static struct {
     NULL, NULL, RXI_LOGC_DEFAULT_LEVEL, false, {{0}},
 };
 
+static void time_to_str(char *);
+
+static int year;
+static int month;
+static int day;
+static int hour;
+static int minutes;
+static int seconds;
+static int usec;
+
+static struct timeval tv;
+static struct tm *tm;
+
+
 static const char *level_strings[] = {"[[TRACE]]", "[[DEBUG]]", "[[ INFO]]",
                                       "[[ WARN]]", "[[ERROR]]", "[[FATAL]]"};
 
@@ -57,8 +72,10 @@ static inline const char *get_level_color(int level) {
 #endif
 
 static void stdout_callback(log_Event *ev) {
-    char buf[16];
-    buf[strftime(buf, sizeof(buf), "%H:%M:%S", ev->time)] = '\0';
+    //char buf[16];
+    //buf[strftime(buf, sizeof(buf), "%H:%M:%S", ev->time)] = '\0';
+    char *buf = ev->time_str;
+
 #ifdef LOG_USE_COLOR
     fprintf(ev->udata, "%s %s%-7s\x1b[0m \x1b[90m%s:%d:\x1b[0m ", buf,
             get_level_color(ev->level), get_level_string(ev->level), ev->file,
@@ -73,10 +90,12 @@ static void stdout_callback(log_Event *ev) {
 }
 
 static void file_callback(log_Event *ev) {
-    char buf[64];
-    buf[strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M:%S", ev->time)] = '\0';
-    fprintf(ev->udata, "%s %-7s %s:%d: ", buf, get_level_string(ev->level),
-            ev->file, ev->line);
+    //char buf[64];
+    //buf[strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M:%S", ev->time)] = '\0';
+    char *buf = ev->time_str;
+
+    fprintf(ev->udata, "%s %-7s %s:%d: ", buf, get_level_string(ev->level), ev->file, ev->line);
+
     vfprintf(ev->udata, ev->fmt, ev->ap);
     fprintf(ev->udata, "\n");
     fflush(ev->udata);
@@ -135,6 +154,8 @@ void log_log(int level, const char *file, int line, const char *fmt, ...) {
 
     lock();
 
+    time_to_str(ev.time_str);
+
     if (!L.quiet && level >= L.level) {
         init_event(&ev, stderr);
         va_start(ev.ap, fmt);
@@ -154,3 +175,31 @@ void log_log(int level, const char *file, int line, const char *fmt, ...) {
 
     unlock();
 }
+
+/* Write time to buf in format YYYY-MM-DD HH:MM:SS.ms */
+static void time_to_str(char *buf)
+{
+    gettimeofday(&tv, NULL);
+    tm = localtime(&tv.tv_sec);
+    /* Add 1900 to get the right year value read the manual page for localtime() */
+    year    = tm->tm_year + 1900;
+    /* Months are 0 indexed in struct tm */
+    month   = tm->tm_mon + 1;
+    day     = tm->tm_mday;
+    hour    = tm->tm_hour;
+    minutes = tm->tm_min;
+    seconds = tm->tm_sec;
+    usec    = tv.tv_usec;
+    // msec
+    // buf[strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M:%S", lt)] = '\0';
+    int len = sprintf(buf, "%04d-%02d-%02d %02d:%02d:%02d.%06d ",
+                      year,
+                      month,
+                      day,
+                      hour,
+                      minutes,
+                      seconds,
+                      usec);
+    buf[len] = '\0';
+}
+
