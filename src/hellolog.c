@@ -1,13 +1,14 @@
 #include "log.h"
 
 int main(int argc, char** argv) {
-    log_set_quiet(true);
     FILE *f1;
     FILE *f2;
     FILE *f3;
     FILE *f4;
     FILE *f5;
     FILE *f6;
+
+    log_set_quiet(true);
 
     f1=fopen("/tmp/hellolog_level_trace.log", "w");
     f2=fopen("/tmp/hellolog_level_debug.log", "w");
