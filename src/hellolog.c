@@ -9,15 +9,15 @@ int main(int argc, char** argv) {
     FILE *f5;
     FILE *f6;
 
-    f1=fopen("/tmp/hellolog_level_debug.log", "w");
-    f2=fopen("/tmp/hellolog_level_trace.log", "w");
+    f1=fopen("/tmp/hellolog_level_trace.log", "w");
+    f2=fopen("/tmp/hellolog_level_debug.log", "w");
     f3=fopen("/tmp/hellolog_level_info.log", "w");
     f4=fopen("/tmp/hellolog_level_warn.log", "w");
     f5=fopen("/tmp/hellolog_level_error.log", "w");
     f6=fopen("/tmp/hellolog_level_fatal.log", "w");
 
-    log_add_fp(f1, LOG_DEBUG);
-    log_add_fp(f2, LOG_TRACE);
+    log_add_fp(f1, LOG_TRACE);
+    log_add_fp(f2, LOG_DEBUG);
     log_add_fp(f3, LOG_INFO);
     log_add_fp(f4, LOG_WARN);
     log_add_fp(f5, LOG_ERROR);
