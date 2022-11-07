@@ -24,6 +24,7 @@ int main(int argc, char** argv) {
     log_add_fp(f5, LOG_ERROR);
     log_add_fp(f6, LOG_FATAL);
 
+    /* C89-compatible usage example */
     log_trace2("TRACE - Hello %s", "world");
     log_debug2("DEBUG - Hello %s", "world");
     log_info2("INFO - Hello %s", "world");
@@ -31,9 +32,7 @@ int main(int argc, char** argv) {
     log_error2("ERROR - Hello %s", "world");
     log_fatal2("FATAL - Hello %s", "world");
 
-    /* Pre-C99 usage example
     log_trace3("test 3 args: %s %s", "arg1", "arg2");
-    */
     log_log(LOG_ERROR, __FILE__, __LINE__, "test 3 args: %s %s", "arg1", "arg2");
 
     fclose(f1);
