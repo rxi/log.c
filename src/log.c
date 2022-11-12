@@ -114,7 +114,7 @@ void log_set_quiet(bool enable) {
 
 int log_add_callback(log_LogFn fn, void *udata, int level) {
   for (int i = 0; i < MAX_CALLBACKS; i++) {
-    if (!L.callbacks[i].fn) {
+    if (!L.callbacks[i].fn || L.callbacks[i].udata == udata) {
       L.callbacks[i] = (Callback) { fn, udata, level };
       return 0;
     }
