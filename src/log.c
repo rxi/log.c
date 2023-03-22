@@ -39,7 +39,7 @@ static struct {
 } L;
 
 
-static const char *level_strings[] = {
+const char *level_strings[] = {
   "TRACE", "DEBUG", "INFO", "WARN", "ERROR", "FATAL"
 };
 
@@ -121,6 +121,17 @@ int log_add_callback(log_LogFn fn, void *udata, int level) {
   }
   return -1;
 }
+
+int log_set_level_callback(log_LogFn fn, int level) {
+  for (int i = 0; i < MAX_CALLBACKS; i++) {
+    if (L.callbacks[i].fn == fn) {
+      L.callbacks[i].level = level;
+      return 0;
+    }
+  }
+  return -1;
+}
+
 
 
 int log_add_fp(FILE *fp, int level) {
