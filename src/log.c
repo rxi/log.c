@@ -24,6 +24,8 @@
 
 #define MAX_CALLBACKS 32
 
+int _gettimeofday(struct timeval *tv,void *notused) { return 0; }
+
 typedef struct {
   log_LogFn fn;
   void *udata;
@@ -49,19 +51,18 @@ static const char *level_colors[] = {
 };
 #endif
 
-
 static void stdout_callback(log_Event *ev) {
   char buf[16];
   buf[strftime(buf, sizeof(buf), "%H:%M:%S", ev->time)] = '\0';
 #ifdef LOG_USE_COLOR
   fprintf(
-    ev->udata, "%s %s%-5s\x1b[0m \x1b[90m%s:%d:\x1b[0m ",
+    ev->udata, "%s %s%-5s\x1b[0m \x1b[90m%s:%d:\x1b[0m \x1b[37m%s\x1b[0m ",
     buf, level_colors[ev->level], level_strings[ev->level],
-    ev->file, ev->line);
+    ev->file, ev->line, ev->func);
 #else
   fprintf(
-    ev->udata, "%s %-5s %s:%d: ",
-    buf, level_strings[ev->level], ev->file, ev->line);
+    ev->udata, "%s %-5s %s:%d:%s ",
+    buf, level_strings[ev->level], ev->file, ev->line, ev->func);
 #endif
   vfprintf(ev->udata, ev->fmt, ev->ap);
   fprintf(ev->udata, "\n");
@@ -73,12 +74,13 @@ static void file_callback(log_Event *ev) {
   char buf[64];
   buf[strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M:%S", ev->time)] = '\0';
   fprintf(
-    ev->udata, "%s %-5s %s:%d: ",
-    buf, level_strings[ev->level], ev->file, ev->line);
+    ev->udata, "%s %-5s %s:%d:%s ",
+    buf, level_strings[ev->level], ev->file, ev->line, ev->func);
   vfprintf(ev->udata, ev->fmt, ev->ap);
   fprintf(ev->udata, "\n");
   fflush(ev->udata);
 }
+
 
 
 static void lock(void)   {
@@ -136,12 +138,12 @@ static void init_event(log_Event *ev, void *udata) {
   ev->udata = udata;
 }
 
-
-void log_log(int level, const char *file, int line, const char *fmt, ...) {
+void log_log(int level, const char *file, int line, const char *func, const char *fmt, ...) {
   log_Event ev = {
     .fmt   = fmt,
     .file  = file,
     .line  = line,
+    .func  = func,
     .level = level,
   };
 
