@@ -1,0 +1,24 @@
+#!/bin/sh
+
+set -eu
+
+PREFIX=""
+
+if [ $# -lt 1 ]
+then
+    PREFIX="/usr/local"
+else 
+    PREFIX=$1
+fi 
+
+sudo mkdir $PREFIX/include/log
+
+include_dir=include/
+headers=""
+
+for entry in $include_dir*
+do
+    headers=$headers$entry" "
+done
+
+sudo install $headers $PREFIX/include/log

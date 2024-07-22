@@ -1,0 +1,52 @@
+#!/bin/sh
+
+set -eu
+
+rm -f config.mk
+
+PREFIX=""
+VERSION=$(cat VERSION)
+MAJOR=$(cut -d . -f 1 VERSION)
+MINOR=$(cut -d . -f 2 VERSION)
+PATCH=$(cut -d . -f 3 VERSION)
+
+if [ $# -lt 1 ]
+then
+	PREFIX="/usr/local"
+else
+	PREFIX=$1
+fi
+
+include_dir=include/
+headers=""
+
+for entry in "${include_dir}"*
+do 
+	headers=$headers"${entry} "
+done
+
+src_dir=src/
+objs=""
+
+for entry in "${src_dir}"*
+do
+	entry=${entry:0:$((${#entry}-1))}o
+	entry=${entry/src/build}
+	objs=$objs"${entry} "
+done
+
+cat > config.mk <<-EOF
+VERSION=$VERSION
+MAJOR=$MAJOR
+MINOR=$MINOR
+PATCH=$PATCH
+HEADERS=$headers
+OBJS=$objs
+PREFIX=$PREFIX
+EOF
+
+
+if [ ! -d build ]
+then
+	mkdir build
+fi

@@ -1,4 +1,22 @@
 # log.c
+
+## Installation
+**Step by step instruction:**
+```shell
+# Everything described under must be performed in the root directory of the repository 
+
+sh install-dev /usr # This /usr a base path for libraries and i recommend using it to install header files
+
+sh configure /usr # This /usr a base path for libraries and i recommend using it to install shared dynamic libraries
+
+make install # Assembly and install in specified directories
+```
+
+**If you need to remove library:** 
+```shell
+make remove
+```
+___
 A simple logging library implemented in C99
 
 ![screenshot](https://cloud.githubusercontent.com/assets/3920290/23831970/a2415e96-0723-11e7-9886-f8f5d2de60fe.png)
