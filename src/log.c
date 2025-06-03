@@ -35,82 +35,95 @@ static struct {
   log_LockFn lock;
   int level;
   bool quiet;
+  bool graphics; // Enable .nfo-style ASCII art
+  bool colors;   // Enable colored text
+  bool blink;    // Enable text blinking
+  bool bold;     // Enable bold text
+  bool underline;// Enable underlined text
+  bool reverse;  // Enable reverse video
   Callback callbacks[MAX_CALLBACKS];
 } L;
-
 
 static const char *level_strings[] = {
   "TRACE", "DEBUG", "INFO", "WARN", "ERROR", "FATAL"
 };
 
-#ifdef LOG_USE_COLOR
-static const char *level_colors[] = {
-  "\x1b[94m", "\x1b[36m", "\x1b[32m", "\x1b[33m", "\x1b[31m", "\x1b[35m"
-};
-#endif
-
-
 static void stdout_callback(log_Event *ev) {
-  char buf[16];
-  buf[strftime(buf, sizeof(buf), "%H:%M:%S", ev->time)] = '\0';
-#ifdef LOG_USE_COLOR
-  fprintf(
-    ev->udata, "%s %s%-5s\x1b[0m \x1b[90m%s:%d:\x1b[0m ",
-    buf, level_colors[ev->level], level_strings[ev->level],
-    ev->file, ev->line);
-#else
-  fprintf(
-    ev->udata, "%s %-5s %s:%d: ",
-    buf, level_strings[ev->level], ev->file, ev->line);
-#endif
-  vfprintf(ev->udata, ev->fmt, ev->ap);
-  fprintf(ev->udata, "\n");
+  // Apply attributes if enabled
+  const char *attr = L.blink || L.bold || L.underline || L.reverse ? LEVEL_ATTRIBUTES[ev->level] : "";
+
+  if (L.graphics) {
+    // Print ASCII art, colored if colors are enabled
+    fprintf(ev->udata, "%s%s%s%s",
+            L.colors ? LEVEL_COLORS[ev->level] : "",
+            attr,
+            LOG_GRAPHICS[ev->level],
+            L.colors ? ANSI_RESET : "");
+  }
+
+  // Colored output with attributes
+  if (L.colors) {
+    fprintf(
+      ev->udata, "%s%s%-5s%s %s:%d: %s",
+      attr,
+      LEVEL_COLORS[ev->level], level_strings[ev->level],
+      FILELINE_COLORS[ev->level], ev->file, ev->line,
+      MESSAGE_COLORS[ev->level]);
+    vfprintf(ev->udata, ev->fmt, ev->ap);
+    fprintf(ev->udata, "%s\n", ANSI_RESET);
+  } else {
+    // Plain text output with attributes
+    fprintf(
+      ev->udata, "%s%-5s %s:%d: ",
+      attr, level_strings[ev->level], ev->file, ev->line);
+    vfprintf(ev->udata, ev->fmt, ev->ap);
+    fprintf(ev->udata, "%s\n", L.blink || L.bold || L.underline || L.reverse ? ANSI_RESET : "");
+  }
   fflush(ev->udata);
 }
-
 
 static void file_callback(log_Event *ev) {
-  char buf[64];
-  buf[strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M:%S", ev->time)] = '\0';
   fprintf(
-    ev->udata, "%s %-5s %s:%d: ",
-    buf, level_strings[ev->level], ev->file, ev->line);
+    ev->udata, "%-5s %s:%d: ",
+    level_strings[ev->level], ev->file, ev->line);
   vfprintf(ev->udata, ev->fmt, ev->ap);
   fprintf(ev->udata, "\n");
   fflush(ev->udata);
 }
 
-
-static void lock(void)   {
+static void lock(void) {
   if (L.lock) { L.lock(true, L.udata); }
 }
-
 
 static void unlock(void) {
   if (L.lock) { L.lock(false, L.udata); }
 }
 
-
 const char* log_level_string(int level) {
   return level_strings[level];
 }
-
 
 void log_set_lock(log_LockFn fn, void *udata) {
   L.lock = fn;
   L.udata = udata;
 }
 
-
 void log_set_level(int level) {
   L.level = level;
 }
-
 
 void log_set_quiet(bool enable) {
   L.quiet = enable;
 }
 
+void log_style(uint32_t style) {
+  L.graphics = (style & LOG_STYLE_NFO) != 0;
+  L.colors = (style & LOG_STYLE_COLOR) != 0;
+  L.blink = (style & LOG_STYLE_BLINK) != 0;
+  L.bold = (style & LOG_STYLE_BOLD) != 0;
+  L.underline = (style & LOG_STYLE_UNDERLINE) != 0;
+  L.reverse = (style & LOG_STYLE_REVERSE) != 0;
+}
 
 int log_add_callback(log_LogFn fn, void *udata, int level) {
   for (int i = 0; i < MAX_CALLBACKS; i++) {
@@ -122,20 +135,9 @@ int log_add_callback(log_LogFn fn, void *udata, int level) {
   return -1;
 }
 
-
 int log_add_fp(FILE *fp, int level) {
   return log_add_callback(file_callback, fp, level);
 }
-
-
-static void init_event(log_Event *ev, void *udata) {
-  if (!ev->time) {
-    time_t t = time(NULL);
-    ev->time = localtime(&t);
-  }
-  ev->udata = udata;
-}
-
 
 void log_log(int level, const char *file, int line, const char *fmt, ...) {
   log_Event ev = {
@@ -143,12 +145,12 @@ void log_log(int level, const char *file, int line, const char *fmt, ...) {
     .file  = file,
     .line  = line,
     .level = level,
+    .udata = stderr
   };
 
   lock();
 
   if (!L.quiet && level >= L.level) {
-    init_event(&ev, stderr);
     va_start(ev.ap, fmt);
     stdout_callback(&ev);
     va_end(ev.ap);
@@ -157,7 +159,7 @@ void log_log(int level, const char *file, int line, const char *fmt, ...) {
   for (int i = 0; i < MAX_CALLBACKS && L.callbacks[i].fn; i++) {
     Callback *cb = &L.callbacks[i];
     if (level >= cb->level) {
-      init_event(&ev, cb->udata);
+      ev.udata = cb->udata;
       va_start(ev.ap, fmt);
       cb->fn(&ev);
       va_end(ev.ap);
