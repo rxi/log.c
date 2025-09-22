@@ -1,0 +1,5 @@
+*.so
+*.a
+*.o
+test/test
+test/my_log
