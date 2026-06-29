@@ -20,6 +20,16 @@
  * IN THE SOFTWARE.
  */
 
+/*
+ * clock_gettime(CLOCK_REALTIME, ...) is a POSIX.1b function. Requesting the
+ * real-time extensions here guarantees it is declared even when this file is
+ * compiled in a strict standards mode such as -std=c11 or -std=c99. The guard
+ * avoids lowering a stricter level the build system may already have set.
+ */
+#if !defined(_POSIX_C_SOURCE) || _POSIX_C_SOURCE < 199309L
+#define _POSIX_C_SOURCE 199309L
+#endif
+
 #include "log.h"
 
 #define MAX_CALLBACKS 32
@@ -49,10 +59,21 @@ static const char *level_colors[] = {
 };
 #endif
 
+/*
+ * Milliseconds (0-999) for the event currently being formatted. struct tm has
+ * no sub-second field, so the value is captured once per call in init_event()
+ * and read by the callbacks. log_log() runs every callback for a given event
+ * between lock()/unlock(), so this shares the same threading model as the rest
+ * of the logger: register a lock via log_set_lock() if you log from multiple
+ * threads.
+ */
+static int event_msec;
+
 
 static void stdout_callback(log_Event *ev) {
   char buf[16];
-  buf[strftime(buf, sizeof(buf), "%H:%M:%S", ev->time)] = '\0';
+  size_t len = strftime(buf, sizeof(buf), "%H:%M:%S", ev->time);
+  snprintf(buf + len, sizeof(buf) - len, ".%03d", event_msec);
 #ifdef LOG_USE_COLOR
   fprintf(
     ev->udata, "%s %s%-5s\x1b[0m \x1b[90m%s:%d:\x1b[0m ",
@@ -71,7 +92,8 @@ static void stdout_callback(log_Event *ev) {
 
 static void file_callback(log_Event *ev) {
   char buf[64];
-  buf[strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M:%S", ev->time)] = '\0';
+  size_t len = strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M:%S", ev->time);
+  snprintf(buf + len, sizeof(buf) - len, ".%03d", event_msec);
   fprintf(
     ev->udata, "%s %-5s %s:%d: ",
     buf, level_strings[ev->level], ev->file, ev->line);
@@ -130,8 +152,11 @@ int log_add_fp(FILE *fp, int level) {
 
 static void init_event(log_Event *ev, void *udata) {
   if (!ev->time) {
-    time_t t = time(NULL);
+    struct timespec ts;
+    clock_gettime(CLOCK_REALTIME, &ts);
+    time_t t = ts.tv_sec;
     ev->time = localtime(&t);
+    event_msec = (int) (ts.tv_nsec / 1000000);
   }
   ev->udata = udata;
 }
